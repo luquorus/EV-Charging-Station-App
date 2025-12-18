@@ -33,8 +33,16 @@ class Station {
         ?.map((p) => Port.fromJson(p as Map<String, dynamic>))
         .toList() ?? [];
 
+    // v1 API uses 'id' or '_id', legacy uses '_id'
+    final stationId = json['id']?.toString() ?? 
+                      json['_id']?.toString() ?? 
+                      '${json['lat']}_${json['lng']}';
+
+    // v1 API uses 'distanceKm', legacy uses 'distance'
+    final distanceValue = json['distanceKm'] ?? json['distance'];
+
     return Station(
-      id: json['_id']?.toString() ?? '${json['lat']}_${json['lng']}',
+      id: stationId,
       name: json['name'] ?? 'Unknown Station',
       address: json['address'] ?? 'No address',
       lat: (json['lat'] as num).toDouble(),
@@ -44,8 +52,8 @@ class Station {
       ports: portsList,
       operatingHours: json['operatingHours'] ?? '24/7',
       parking: json['parking'] ?? 'Unknown',
-      distance: json['distance'] != null 
-          ? (json['distance'] as num).toDouble() 
+      distance: distanceValue != null 
+          ? (distanceValue as num).toDouble() 
           : null,
     );
   }
